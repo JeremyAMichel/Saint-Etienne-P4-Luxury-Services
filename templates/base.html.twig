@@ -118,7 +118,7 @@ $(handler);
 											<a href="/templates/jobs/index.html">Jobs Offers</a>
 										</li>
 										<li>
-											<a href="/templates/compagny.html">About Us</a>
+											<a href="{{ path('app_company') }}">About Us</a>
 										</li>
 										<li>
 											<a href="{{ path('app_contact') }}">Contact</a>
@@ -162,7 +162,7 @@ $(handler);
 									</a>
 								</li>
 								<li class=" dropdown">
-									<a target="_self" href="/templates/compagny.html">
+									<a target="_self" href="{{ path('app_company') }}">
 										<i class=""></i>
 										<span>About us</span>
 									</a>
@@ -250,7 +250,7 @@ $(handler);
 								</a>
 							</li>
 							<li class=" dropdown">
-								<a target="_self" href="/templates/compagny.html">
+								<a target="_self" href="{{ path('app_company') }}">
 									<span>About us</span>
 								</a>
 							</li>
@@ -266,10 +266,14 @@ $(handler);
 				<!-- /.secondary-footer -->
 			</footer>
 
-            {% block javascriptFooter %}
+			{% block javascriptFooter %}
+				<script>
+					onAppReady(function () {
+						$('.preload').remove();
+					});
+				</script>
 
-            
-            {% endblock %}
+			{% endblock %}
 
 		</body>
 	</html>
