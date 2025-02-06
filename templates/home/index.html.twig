@@ -306,8 +306,11 @@
 
 {% block javascriptFooter %}
 	<script type="text/javascript">
-		document.querySelector(".rev_slider_wrapper").setAttribute("style", "background:url('assets/img" + (
-isMobile ? "/bg1.jpg" : "/bg3.jpg"
+		let bg1URL = "{{ asset('img/bg1.jpg') }}";
+let bg2URL = "{{ asset('img/bg2.jpg') }}";
+let bg3URL = "{{ asset('img/bg3.jpg') }}";
+document.querySelector(".rev_slider_wrapper").setAttribute("style", "background:url('" + (
+isMobile ? bg1URL : bg3URL
 ) + "');" + "background-size:cover;" + "background-position: center center;" + "height:" + window.innerHeight + "px");
 
 onAppReady(function () {
