@@ -151,8 +151,8 @@ $(handler);
 							<ul class="menuzord-menu pull-right light" role="navigation">
 
 								{% if app.user %}
-									<li class=" dropdown">
-										<a target="_self" href="{{ path('app_profile') }}">
+									<li class="{{ app.current_route is same as('app_profile')  ? 'active' : '' }} dropdown">
+										<a target="_self" href="{{ path('app_profile') }}" >
 											<span>Profile</span>
 										</a>
 									</li>
@@ -165,8 +165,8 @@ $(handler);
 								{% else %}
 
 
-									<li class=" dropdown">
-										<a target="_self" href="{{ path('app_login') }}">
+									<li class="{{ app.current_route is same as('app_login')  ? 'active' : '' }} dropdown">
+										<a target="_self" href="{{ path('app_login') }}" >
 											<span>Login</span>
 										</a>
 									</li>
@@ -179,25 +179,25 @@ $(handler);
 								{% endif %}
 							</ul>
 							<ul class="menuzord-menu pull-right light" role="navigation">
-								<li class="active dropdown">
+								<li class="{{ app.current_route is same as('app_home')  ? 'active' : '' }} dropdown">
 									<a target="_self" href="{{ path('app_home') }}">
 										<i class=""></i>
 										<span>Home</span>
 									</a>
 								</li>
-								<li class=" dropdown">
+								<li class="{{ app.current_route is same as('app_job')  ? 'active' : '' }} dropdown">
 									<a target="_self" href="{{ path('app_job') }}">
 										<i class=""></i>
 										<span>Jobs offers</span>
 									</a>
 								</li>
-								<li class=" dropdown">
+								<li class="{{ app.current_route is same as('app_company')  ? 'active' : '' }} dropdown">
 									<a target="_self" href="{{ path('app_company') }}">
 										<i class=""></i>
 										<span>About us</span>
 									</a>
 								</li>
-								<li class=" dropdown">
+								<li class="{{ app.current_route is same as('app_contact')  ? 'active' : '' }} dropdown">
 									<a target="_self" href="{{ path('app_contact') }}">
 										<i class=""></i>
 										<span>Contact</span>
