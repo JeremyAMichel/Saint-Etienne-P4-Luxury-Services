@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -28,6 +29,10 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
+        if($this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -93,5 +98,54 @@ class RegistrationController extends AbstractController
         $this->addFlash('success', 'Your email address has been verified.');
 
         return $this->redirectToRoute('app_login');
+    }
+
+    #[Route('/verify/email/resend', name: 'app_resend_verification_email')]
+    public function resendVerificationEmail(Request $request, UserRepository $userRepository): Response
+    {
+        /** @var User */
+        $user = $this->getUser();
+
+        if (null === $user) {
+            return $this->redirectToRoute('app_register');
+        }
+
+        $email = $user->getEmail();
+
+        if (null === $email) {
+            return $this->redirectToRoute('app_register');
+        }
+
+        if ($user->isVerified()) {
+            $this->addFlash('success', 'Your email address has already been verified.');
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->trySendEmailConfirmation($user);
+    }
+
+    private function trySendEmailConfirmation(User $user): RedirectResponse
+    {
+        // generate a signed url and email it to the user
+        try {
+            $this->emailVerifier->sendEmailConfirmation(
+                'app_verify_email',
+                $user,
+                (new TemplatedEmail())
+                    ->from(new Address('support@luxury-services.com', 'Luxury Services Support'))
+                    ->to((string) $user->getEmail())
+                    ->subject('Please Confirm your Email')
+                    ->htmlTemplate('emails/confirmation_email.html.twig')
+            );
+
+            // do anything else you need here, like send an email
+            $this->addFlash('success', 'A new verification link has been sent to your email address.');
+
+            return $this->redirectToRoute('app_profile');
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'An error occurred while sending the message : ' . $e->getMessage());
+            return $this->redirectToRoute('contact');
+        }
     }
 }

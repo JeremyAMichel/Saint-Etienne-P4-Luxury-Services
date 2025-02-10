@@ -2,7 +2,10 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Category;
+use App\Entity\Experience;
 use App\Entity\Gender;
+use App\Entity\JobOfferType;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -53,12 +56,19 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Jobs');
 
+        yield MenuItem::linkToCrud('Job Offer Types', 'fas fa-briefcase', JobOfferType::class);
+        yield MenuItem::linkToCrud('Categories', 'fas fa-tags', Category::class);
 
         yield MenuItem::section('Candidates');
+
+        // TODO
+        // yield MenuItem::linkToCrud('Candidates', 'fa fa-users', Candidate::class);
+        yield MenuItem::linkToCrud('Experiences', 'fas fa-chart-line', Experience::class);
         yield MenuItem::linkToCrud('Genders', 'fas fa-venus-mars', Gender::class);
-        
-        
-        yield MenuItem::section('Recruters');
-        yield MenuItem::linkToCrud('Recruters', 'fas fa-user-tie', User::class);
+
+        yield MenuItem::section('Recruiters');
+
+        // TODO
+        // yield MenuItem::linkToCrud('Recruiters', 'fa fa-user-tie', User::class);
     }
 }
