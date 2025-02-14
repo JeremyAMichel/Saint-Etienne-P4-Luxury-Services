@@ -4,13 +4,13 @@ namespace App\Service;
 
 use App\Attribute\ProfileField;
 use App\Entity\Candidate;
+use App\Interfaces\ProfileProgressCalculatorInterface;
 use Countable;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use ReflectionClass;
 use ReflectionProperty;
 
-class ProfileProgressionCalculator
+class ProfileProgressionCalculator implements ProfileProgressCalculatorInterface
 {
     private static array $profileMappingCache = [];
     private ReflectionClass $reflection;
@@ -22,7 +22,7 @@ class ProfileProgressionCalculator
        $this->entityManager = $entityManager; 
     }
 
-    public function calculateProgress(Candidate $candidate): int
+    public function calculerProgress(Candidate $candidate): int
     {
         $className = get_class($candidate);
         $this->reflection = new ReflectionClass($candidate);
