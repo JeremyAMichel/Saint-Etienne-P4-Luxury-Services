@@ -1,24 +1,29 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Recruiter;
 
-use App\Entity\Candidate;
-use App\Entity\Category;
-use App\Entity\Experience;
-use App\Entity\Gender;
-use App\Entity\JobOfferType;
+use App\Entity\Application;
+use App\Entity\Client;
+use App\Entity\JobOffer;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[AdminDashboard(routePath: '/admin', routeName: 'admin')]
-class DashboardController extends AbstractDashboardController
+#[AdminDashboard(routePath: '/pro', routeName: 'pro')]
+class RecruiterDashboardController extends AbstractDashboardController
 {
-    #[Route('/admin', name: 'admin')]
+
+    public function __construct(private AdminUrlGenerator $adminUrlGenerator)
+    {
+
+    }
+
+    #[Route('/pro', name: 'pro')]
     public function index(): Response
     {
         // return parent::index();
@@ -41,7 +46,7 @@ class DashboardController extends AbstractDashboardController
         // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
         // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
         //
-        return $this->render('admin/dashboard.html.twig');
+        return $this->render('pro/recruiter.html.twig');
     }
 
     public function configureDashboard(): Dashboard
@@ -55,19 +60,31 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-tachometer-alt');
 
-        yield MenuItem::section('Jobs');
-
-        yield MenuItem::linkToCrud('Job Offer Types', 'fas fa-briefcase', JobOfferType::class);
-        yield MenuItem::linkToCrud('Categories', 'fas fa-tags', Category::class);
-
-        yield MenuItem::section('Candidates');
-
-        yield MenuItem::linkToCrud('Candidates', 'fa fa-users', Candidate::class);
-        yield MenuItem::linkToCrud('Experiences', 'fas fa-chart-line', Experience::class);
-        yield MenuItem::linkToCrud('Genders', 'fas fa-venus-mars', Gender::class);
-
-        yield MenuItem::section('Recruiters');
+        yield MenuItem::section('Fill your profile', 'fa fa-user-tie');
         
-        yield MenuItem::linkToCrud('Recruiters', 'fa fa-user-tie', User::class);
+        
+
+        /** @var User */
+        $user = $this->getUser();
+        $client = $user->getClient();
+
+
+        // Générer l'URL de la page d'édition du profil Client
+        $url = $this->adminUrlGenerator
+            ->setController(ClientCrudController::class)
+            ->setAction('edit')
+            ->setEntityId($client->getId())
+            ->generateUrl();
+
+        yield MenuItem::linkToUrl('Here', 'fa fa-arrow-right', $url);
+
+
+        yield MenuItem::section('Job Offer', 'fa fa-briefcase');
+        yield MenuItem::linkToCrud('Manage your jobs', 'fa fa-tasks', JobOffer::class);
+        // TODO
+        // yield MenuItem::linkToCrud('Applications', 'fa fa-user-check', Application::class);
+
+
+
     }
 }

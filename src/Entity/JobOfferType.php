@@ -19,14 +19,19 @@ class JobOfferType
     private ?string $name = null;
 
     /**
-     * @var Collection<int, Candidate>
+     * @var Collection<int, JobOffer>
      */
-    #[ORM\OneToMany(targetEntity: Candidate::class, mappedBy: 'jobCategory')]
-    private Collection $candidates;
+    #[ORM\OneToMany(targetEntity: JobOffer::class, mappedBy: 'jobType', orphanRemoval: true)]
+    private Collection $jobOffers;
 
     public function __construct()
     {
-        $this->candidates = new ArrayCollection();
+        $this->jobOffers = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 
     public function getId(): ?int
@@ -46,30 +51,30 @@ class JobOfferType
         return $this;
     }
 
-    /**
-     * @return Collection<int, Candidate>
+     /**
+     * @return Collection<int, JobOffer>
      */
-    public function getCandidates(): Collection
+    public function getJobOffers(): Collection
     {
-        return $this->candidates;
+        return $this->jobOffers;
     }
 
-    public function addCandidate(Candidate $candidate): static
+    public function addJobOffer(JobOffer $jobOffer): static
     {
-        if (!$this->candidates->contains($candidate)) {
-            $this->candidates->add($candidate);
-            $candidate->setJobCategory($this);
+        if (!$this->jobOffers->contains($jobOffer)) {
+            $this->jobOffers->add($jobOffer);
+            $jobOffer->setJobType($this);
         }
 
         return $this;
     }
 
-    public function removeCandidate(Candidate $candidate): static
+    public function removeJobOffer(JobOffer $jobOffer): static
     {
-        if ($this->candidates->removeElement($candidate)) {
+        if ($this->jobOffers->removeElement($jobOffer)) {
             // set the owning side to null (unless already changed)
-            if ($candidate->getJobCategory() === $this) {
-                $candidate->setJobCategory(null);
+            if ($jobOffer->getJobType() === $this) {
+                $jobOffer->setJobType(null);
             }
         }
 

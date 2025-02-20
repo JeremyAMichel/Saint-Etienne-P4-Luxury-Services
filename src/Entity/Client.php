@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\Cascade;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
@@ -17,17 +21,37 @@ class Client
     private ?string $companyName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $activityType = null;
+    private ?string $typeOfActivity = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $contactName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $contactPhone = null;
+    private ?string $contactPosition = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $contactNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $contactEmail = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $notes = null;
 
     #[ORM\OneToOne(inversedBy: 'client', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    /**
+     * @var Collection<int, JobOffer>
+     */
+    #[ORM\OneToMany(targetEntity: JobOffer::class, mappedBy: 'client', orphanRemoval: true)]
+    private Collection $jobOffers;
+
+    public function __construct()
+    {
+        $this->jobOffers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -46,14 +70,14 @@ class Client
         return $this;
     }
 
-    public function getActivityType(): ?string
+    public function getTypeOfActivity(): ?string
     {
-        return $this->activityType;
+        return $this->typeOfActivity;
     }
 
-    public function setActivityType(?string $activityType): static
+    public function setTypeOfActivity(?string $typeOfActivity): static
     {
-        $this->activityType = $activityType;
+        $this->typeOfActivity = $typeOfActivity;
 
         return $this;
     }
@@ -70,14 +94,50 @@ class Client
         return $this;
     }
 
-    public function getContactPhone(): ?string
+    public function getContactPosition(): ?string
     {
-        return $this->contactPhone;
+        return $this->contactPosition;
     }
 
-    public function setContactPhone(?string $contactPhone): static
+    public function setContactPosition(?string $contactPosition): static
     {
-        $this->contactPhone = $contactPhone;
+        $this->contactPosition = $contactPosition;
+
+        return $this;
+    }
+
+    public function getContactNumber(): ?string
+    {
+        return $this->contactNumber;
+    }
+
+    public function setContactNumber(?string $contactNumber): static
+    {
+        $this->contactNumber = $contactNumber;
+
+        return $this;
+    }
+
+    public function getContactEmail(): ?string
+    {
+        return $this->contactEmail;
+    }
+
+    public function setContactEmail(?string $contactEmail): static
+    {
+        $this->contactEmail = $contactEmail;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): static
+    {
+        $this->notes = $notes;
 
         return $this;
     }
@@ -90,6 +150,36 @@ class Client
     public function setUser(User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, JobOffer>
+     */
+    public function getJobOffers(): Collection
+    {
+        return $this->jobOffers;
+    }
+
+    public function addJobOffer(JobOffer $jobOffer): static
+    {
+        if (!$this->jobOffers->contains($jobOffer)) {
+            $this->jobOffers->add($jobOffer);
+            $jobOffer->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJobOffer(JobOffer $jobOffer): static
+    {
+        if ($this->jobOffers->removeElement($jobOffer)) {
+            // set the owning side to null (unless already changed)
+            if ($jobOffer->getClient() === $this) {
+                $jobOffer->setClient(null);
+            }
+        }
 
         return $this;
     }
